@@ -1,3 +1,7 @@
+/* eslint no-underscore-dangle: 0 */
+/*global ITable */
+/*eslint no-undef: "error"*/
+
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -16,60 +20,57 @@
     return new ITable.InfinityTable(element, options);
   }
 
-  var debug;
+  let debug;
 
-  var table;
-  var mainContainer;
-  var secondContainer;
+  let table;
+  let mainContainer;
+  let secondContainer;
 
-  var elements;
-  var onRenderTr;
-  var onRenderStack;
-  var rowHeight;
-  var copyStyleFromTh;
+  let elements;
+  let onRenderTr;
+  let onRenderStack;
+  let rowHeight;
 
-  var containerWidth;
-  var containerHeight;
-  var tableWidth;
-  var tableHeight;
-  var secondContainerWidth;
-  var secondContainerHeight;
+  let containerWidth;
+  let containerHeight;
+  let tableWidth;
+  let tableHeight;
+  let secondContainerWidth;
+  let secondContainerHeight;
 
-  var secondTableWidth = 0;
-  var secondTableHeight = 0;
+  let secondTableWidth = 0;
+  let secondTableHeight = 0;
 
-  var tableDrawWidth = 0;
-  var tableDrawHeight = 0;
+  let tableDrawWidth = 0;
+  let tableDrawHeight = 0;
 
-  var fatScrollX;
-  var fatScrollY;
+  let fatScrollX;
+  let fatScrollY;
 
-  var scrollBarWidth = 0;
+  let scrollBarWidth = 0;
 
-  var scrollElementWidth = 0;
-  var scrollElementHeight = 0;
+  let scrollElementWidth = 0;
+  let scrollElementHeight = 0;
 
-  var mainContainer = null;
+  let componentTable;
+  let componentTbody;
+  let componentScrollV;
+  let componentScrollH;
+  let componentScrollS;
 
-  var componentTable;
-  var componentTbody;
-  var componentScrollV;
-  var componentScrollH;
-  var componentScrollS;
+  let stack;
+  let firstStackIndexRendered;
+  let stacksRendered;
+  let currentStack;
+  let totalStacks;
+  let lastStack;
 
-  var stack;
-  var firstStackIndexRendered;
-  var stacksRendered;
-  var currentStack;
-  var totalStacks;
-  var lastStack;
+  let hashStackItens;
+  let colors;
 
-  var hashStackItens;
-  var colors;
+  let cameraArea;
 
-  var cameraArea;
-
-  var InfinityTable = function () {
+  let InfinityTable = function () {
     function InfinityTable(element, options) {
       if (_elementIsTable(element)) {
         table = element;
@@ -187,7 +188,7 @@
           newTr.classList.add(`its-${parseInt(i / stack)}`)
           newTr.classList.add('its-tr')
           if (onRenderTr(newTr, element, parseInt(i / stack), colors[parseInt(i / stack)])) {
-            if (copyStyleFromTh) _applyThStyle(newTr);
+
           } else {
             componentTbody.removeChild(componentTbody.lastChild);
           }
@@ -220,18 +221,18 @@
     currentStack = parseInt(((cameraArea.y * fatScrollY) + cameraArea.height) / ((stack * rowHeight)));
 
     if (currentStack != lastStack) {
-        stacksRendered = [];
-        for (let i=currentStack-1; i<currentStack+3; i++) {
-            if (i >= 0 && i < totalStacks) {
-                stacksRendered.push(i);
-            }
+      stacksRendered = [];
+      for (let i=currentStack-1; i<currentStack+3; i++) {
+        if (i >= 0 && i < totalStacks) {
+          stacksRendered.push(i);
         }
-        _renderTable(currentStack, lastStack);
+      }
+      _renderTable();
     }
     lastStack = currentStack;
   }
 
-  function _renderTable(currentStack, lastStack) {
+  function _renderTable() {
     if (currentStack - lastStack > 0) {
       if (Math.abs(currentStack - lastStack) == 1) {
         let stackForCompact = currentStack-2;
@@ -252,7 +253,7 @@
             newTr.classList.add(`its-${stackForOpen}`);
             newTr.classList.add('its-tr');
             if (onRenderTr(newTr, element, stackForOpen, colors[stackForOpen])) {
-              if (copyStyleFromTh) _applyThStyle(newTr);
+
             } else {
               componentTbody.deleteRow(newTr.rowIndex);
             }
@@ -279,7 +280,7 @@
               newTr.classList.add(`its-${i}`);
               newTr.classList.add('its-tr')
               if (onRenderTr(newTr, element, i, colors[i])) {
-                if (copyStyleFromTh) _applyThStyle(newTr);
+
               } else {
                 componentTbody.deleteRow(newTr.rowIndex);
               }
@@ -306,7 +307,7 @@
 
           let trLastOpened = Array.from(document.querySelectorAll(`.its-${stackForOpen+1}`)).shift();
 
-          hashStackItens[stackForOpen].forEach(function(element, index) {
+          hashStackItens[stackForOpen].forEach(function(element) {
 
             let newTr = componentTbody.insertRow(trLastOpened.rowIndex);
             newTr.style.height = `${rowHeight}px`;
@@ -314,38 +315,36 @@
             newTr.classList.add('its-tr')
 
             if (onRenderTr(newTr, element, stackForOpen, colors[stackForOpen])) {
-              if (copyStyleFromTh) _applyThStyle(newTr);
+
             } else {
               componentTbody.deleteRow(newTr.rowIndex);
             }
-
           });
           onRenderStack();
           firstStackIndexRendered = stackForOpen;
-          return 2;
         }
       } else {
-        let trsForCompact = Array.from(document.getElementsByClassName(`its-tr`));
-        trsForCompact.forEach(el => componentTbody.removeChild(el));
+        const trsForCompact = Array.from(document.getElementsByClassName('its-tr'));
+        trsForCompact.forEach((el) => componentTbody.removeChild(el));
 
         if (currentStack < 1) {
           currentStack = 1;
         }
         let firstValue = null;
-        for (let i=currentStack-1; i<=currentStack+2; i++) {
+        for (let i = currentStack - 1; i <= currentStack + 2; i += 1) {
           if (i >= 0 && i < totalStacks) {
             if (firstValue == null) {
               firstValue = i;
             }
 
-            hashStackItens[i].forEach(function(element, index) {
-              let newTr = componentTbody.insertRow(-1);
+            hashStackItens[i].forEach((element) => {
+              const newTr = componentTbody.insertRow(-1);
               newTr.style.height = `${rowHeight}px`;
               newTr.classList.add(`its-${i}`);
-              newTr.classList.add('its-tr')
+              newTr.classList.add('its-tr');
 
               if (onRenderTr(newTr, element, i, colors[i])) {
-                if (copyStyleFromTh) _applyThStyle(newTr);
+                // do something
               } else {
                 componentTbody.deleteRow(newTr.rowIndex);
               }
@@ -358,57 +357,43 @@
         }
       }
     }
-    return 1;
-  };
-
-  function _applyThStyle(tr) {
-    Array.from(tr.cells).forEach(function(td, index) {
-      let tableThead = table.firstElementChild;
-      if (tableThead.tagName == 'THEAD') {
-        let th = tableThead.rows[0].cells[index];
-        td.width = window.getComputedStyle(th, null).getPropertyValue('width');;
-        td.style.padding = window.getComputedStyle(th, null).getPropertyValue('padding');
-        td.style.margin = window.getComputedStyle(th, null).getPropertyValue('margin');
-      }
-    });
   }
 
   function _applyOptions(options) {
-    options = Object.assign({
+    const newOptions = ({
       debug: false,
       elements: [],
-      onRenderTr: function(tr){},
-      onRenderStack: function(stack){},
+      onRenderTr: (tr) => tr,
+      onRenderStack: (stackId) => stackId,
       rowHeight: 0,
       stack: 0,
-      copyStyleFromTh: false,
-    }, options);
+      ...options,
+    });
 
-    debug = options.debug;
-    elements = options.elements;
-    onRenderTr = options.onRenderTr;
-    onRenderStack = options.onRenderStack;
-    rowHeight = options.rowHeight;
-    stack = options.stack;
-    copyStyleFromTh = options.copyStyleFromTh;
+    debug = newOptions.debug;
+    elements = newOptions.elements;
+    onRenderTr = newOptions.onRenderTr;
+    onRenderStack = newOptions.onRenderStack;
+    rowHeight = newOptions.rowHeight;
+    stack = newOptions.stack;
   }
 
   function _elementIsTable(element) {
-    return element.tagName == 'TABLE';
+    return element.tagName === 'TABLE';
   }
 
   function _getScrollBarWidth() {
-    let containerToMeasureWidth = document.createElement('div');
+    const containerToMeasureWidth = document.createElement('div');
     containerToMeasureWidth.style.visibility = 'hidden';
     containerToMeasureWidth.style.width = '100px';
     containerToMeasureWidth.style.msOverflowStyle = 'scrollbar';
     document.body.appendChild(containerToMeasureWidth);
-    let widthNoScroll = containerToMeasureWidth.offsetWidth;
+    const widthNoScroll = containerToMeasureWidth.offsetWidth;
     containerToMeasureWidth.style.overflow = 'scroll';
-    let inner = document.createElement('div');
+    const inner = document.createElement('div');
     inner.style.width = '100%';
     containerToMeasureWidth.appendChild(inner);
-    let widthWithScroll = inner.offsetWidth;
+    const widthWithScroll = inner.offsetWidth;
     containerToMeasureWidth.parentNode.removeChild(containerToMeasureWidth);
     return widthNoScroll - widthWithScroll;
   }
@@ -416,11 +401,13 @@
   ITable.InfinityTable = InfinityTable;
 
   try {
-	  globalThis.ITable = ITable;
-	} catch (e) {}
+    globalThis.ITable = ITable;
+  } catch (e) {
+    // continue regardless of error
+  }
 
   exports.InfinityTable = InfinityTable;
-  exports["default"] = ITable;
+  exports.default = ITable;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 }));
