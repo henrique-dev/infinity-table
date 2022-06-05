@@ -1,6 +1,6 @@
 # Infinity Table
 
-[![npm version](https://badge.fury.io/js/infinity-canvas.svg)](https://badge.fury.io/for/js/infinity-canvas)
+[![npm version](https://badge.fury.io/js/infinity-table.svg)](https://badge.fury.io/for/js/infinity-table)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
