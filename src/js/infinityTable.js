@@ -423,7 +423,6 @@
         _applyOptions(options);
         _init();
         window.addEventListener('resize', _resizeElements, false);
-        _adjustElements();
       }
     }
     return InfinityTable;
