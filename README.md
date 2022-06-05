@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
-Este componente tem como objetivo a praticidade e economia de recursos quando utilizamos uma tabela com muitos itens, reduzindo a quantidade de recursos criados, através da montagem dinamica das linhas.
+This component has as objective the practicality and economy of resources when using a table with many items, reducing the amount of resources created, through the dynamic assembly of the lines.
 
 ## Install
 `npm install infinity-table` and `import ITable from 'infinity-table';`
