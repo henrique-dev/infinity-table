@@ -22,7 +22,7 @@
             <div class="col-8">
               <div class="form-item">
                 <label>Elements Amount</label>
-                <input id="input_amount" type="number" min="1" name="name" class="is-50" value="500">
+                <input id="input_amount" type="number" min="1" max="500000" name="name" class="is-50" value="500">
               </div>
             </div>
             <div class="col-4">
@@ -45,20 +45,27 @@
           <br>
           <pre><code>const table = document.getElementById('myTable');
 
+function generateElements(amount) {
+  return new Array(amount).fill(0).map((v, i) => {
+    return {
+      id: i,
+      description: 'Some description'
+    };
+  });
+}
+
 function onRenderTr(tr, element, stack) {
   const tdId = tr.insertCell(-1);
   tdId.innerHTML = `${element.id}`;
   const tdDescription = tr.insertCell(-1);
   tdDescription.innerHTML = `${element.description}`;
+  return true;
 }
 
-let infinityTable = new ITable(table, {
-  elements: [{
-    id: 0,
-    description: 'Some Description',
-  }],
+let infinityCanvas = new ICanvas(container, {
+  elements: generateElements(500),
   onRenderTr: onRenderTr,
-  rowHeight: 50
+  rowHeight: 60,
 });</code></pre>
         </div>
       </div>
@@ -98,22 +105,40 @@ let infinityTable = new ITable(table, {
         <div class="col col-12">
           <h3>Usage</h3>
           <p>First we must define a container for our component, with its respective size:</p>
-          <pre><code>&lt;div id=&quot;canvas_container&quot; style=&quot;width: 100%; height: 800px;&quot;&gt;</code></pre>
-          <p>Then we take our container, and pass it to the component's constructor:</p>
-          <pre><code>const container = document.getElementById('canvas_container');
+          <pre><code>&lt;div style='width: 100%; height: 90vh;'&gt;
+  &lt;table id='myTable'&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th width='100px'&gt;&lt;/th&gt;
+        &lt;th&gt;Description&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
+<p>Then we take our container, and pass it to the component's constructor:</p>
+          <pre><code>const table = document.getElementById('myTable');
 
-const elements = [
-  {
-    x: 10, y: 10, width: 100, height: 100, type: 'draw',
-    contextOptions: {globalAlpha: 0.5, fillStyle: "#85C1E9"},
-    elementOptions: {positionFixed: false}
-  }
-];
+function generateElements(amount) {
+  return new Array(amount).fill(0).map((v, i) => {
+    return {
+      id: i,
+      description: 'Some description'
+    };
+  });
+}
+
+function onRenderTr(tr, element, stack) {
+  const tdId = tr.insertCell(-1);
+  tdId.innerHTML = `${element.id}`;
+  const tdDescription = tr.insertCell(-1);
+  tdDescription.innerHTML = `${element.description}`;
+  return true;
+}
 
 let infinityCanvas = new ICanvas(container, {
-  elements: elements,
-  drawWidth: 500,
-  drawHeight: 500,
+  elements: generateElements(500),
+  onRenderTr: onRenderTr,
+  rowHeight: 60,
 });
           </code></pre>
         </div>
@@ -158,7 +183,7 @@ let infinityCanvas = new ICanvas(container, {
           new ITable(table, {
             elements: elements,
             onRenderTr: onRenderTr,
-            rowHeight: 50,
+            rowHeight: 60,
           });
         }
 
