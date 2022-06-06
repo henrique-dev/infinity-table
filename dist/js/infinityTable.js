@@ -126,7 +126,7 @@
     if (elements.length > 0) {
       const trToMeasureSize = tbodyToMeasureSize.insertRow(-1);
       trToMeasureSize.style.height = `${rowHeight}px`;
-      onRenderTr(trToMeasureSize, elements[20], -1);
+      onRenderTr(trToMeasureSize, elements[0], -1);
     }
     tableToMeasureSize.appendChild(tbodyToMeasureSize);
     containerToMeasureSize.appendChild(tableToMeasureSize);
@@ -294,6 +294,8 @@
     componentTable = document.createElement('table');
     componentTable.style.position = 'absolute';
     componentTable.style.width = '100%';
+    componentTable.style.left = '0px';
+    componentTable.style.top = '0px';
     componentTable.classList = table.classList;
     if (table.tHead != null) {
       componentThead = document.createElement('thead');
