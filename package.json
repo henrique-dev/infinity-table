@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/henrique-dev/infinity-table/issues"
   },
-  "homepage": "https://github.com/henrique-dev/infinity-table#readme",
+  "homepage": "https://henrique-dev.github.io/infinity-table",
   "devDependencies": {
     "eslint": "^8.16.0",
     "eslint-config-airbnb-base": "^15.0.0",
