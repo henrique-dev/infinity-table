@@ -29,6 +29,7 @@
   let onRenderTr;
   let onRenderStack;
   let rowHeight;
+  let realRowHeight;
 
   let containerWidth;
   let containerHeight;
@@ -57,7 +58,7 @@
   let componentScrollHSpacer;
   let componentScrollS;
 
-  let stack;
+  let stackAmount;
   let stacksForRender;
   let stacksInRender;
   let currentStack;
@@ -74,8 +75,8 @@
     containerHeight = mainContainer.getBoundingClientRect().height;
     tableWidth = table.getBoundingClientRect().width;
     tableHeight = table.getBoundingClientRect().height;
-    if (stack <= 0) {
-      stack = parseInt(containerHeight / rowHeight, 10);
+    if (stackAmount <= 0) {
+      stackAmount = parseInt(containerHeight / rowHeight, 10);
     }
   }
 
@@ -121,19 +122,22 @@
     }
     tableToMeasureSize.appendChild(theadToMeasureSize);
 
+    const tbodyToMeasureSize = document.createElement('tbody');
     if (elements.length > 0) {
-      const tbodyToMeasureSize = document.createElement('tbody');
       const trToMeasureSize = tbodyToMeasureSize.insertRow(-1);
       trToMeasureSize.style.height = `${rowHeight}px`;
       onRenderTr(trToMeasureSize, elements[20], -1);
-      tableToMeasureSize.appendChild(tbodyToMeasureSize);
     }
-
+    tableToMeasureSize.appendChild(tbodyToMeasureSize);
     containerToMeasureSize.appendChild(tableToMeasureSize);
 
     const sizeInfo = {
+      tableHeight: tableToMeasureSize.getBoundingClientRect().height,
       tableWidth: tableToMeasureSize.getBoundingClientRect().width,
       theadHeight: theadToMeasureSize.getBoundingClientRect().height,
+      tbodyHeight: tbodyToMeasureSize.getBoundingClientRect().height,
+      rowHeight: tbodyToMeasureSize.getBoundingClientRect().height,
+      estimatedRowHeight: tableToMeasureSize.getBoundingClientRect().height - theadToMeasureSize.getBoundingClientRect().height,
     };
 
     mainContainer.removeChild(containerToMeasureSize);
@@ -190,6 +194,15 @@
     });
   }
 
+  function _fixScrollAfterJump() {
+    let fixScrollY = 0;
+    if (currentStack > 1) {
+      fixScrollY = stacksForRender.map((v) => v).shift() * stackAmount * realRowHeight;
+    }
+    secondContainer.scroll(secondContainer.scrollLeft, componentScrollV.scrollTop - fixScrollY);
+    cameraArea.y = componentScrollV.scrollTop / fatScrollY;
+  }
+
   function _renderTable() {
     // scroll down
     const stackDiff = currentStack - lastStack;
@@ -206,6 +219,7 @@
         const stacksForCreate = stacksForRender;
         _removeStacks(stacksForRemove);
         _createStacks(stacksForCreate, -1);
+        _fixScrollAfterJump();
       }
     }
     // scroll up
@@ -222,25 +236,23 @@
         const stacksForCreate = stacksForRender;
         _removeStacks(stacksForRemove);
         _createStacks(stacksForCreate, -1);
+        _fixScrollAfterJump();
       }
     }
-    stacksInRender = stacksForRender;
   }
 
   function _scrollVertical() {
     let fixScrollY = 0;
     if (currentStack > 1) {
-      fixScrollY = stacksInRender.map((v) => v).shift() * stack * rowHeight;
+      fixScrollY = stacksInRender.map((v) => v).shift() * stackAmount * realRowHeight;
     }
-
     secondContainer.scroll(this.scrollLeft, this.scrollTop - fixScrollY);
     cameraArea.y = this.scrollTop / fatScrollY;
-
-    currentStack = parseInt((this.scrollTop + cameraArea.height / 2) / ((stack * rowHeight)), 10);
-
+    currentStack = parseInt((this.scrollTop + cameraArea.height / 2) / ((stackAmount * realRowHeight)), 10);
     if (_arrayDiff(stacksInRender, stacksForRender)) {
       stacksForRender = _generateRange(currentStack);
       _renderTable();
+      stacksInRender = stacksForRender;
     }
     lastStack = currentStack;
   }
@@ -248,14 +260,15 @@
   function _scrollHorizontal() {
     secondContainer.scroll(this.scrollLeft, this.scrollTop);
     cameraArea.x = this.scrollLeft / fatScrollX;
-    lastStack = currentStack;
   }
 
   function _createElements() {
     scrollBarWidth = _getScrollBarWidth();
     const realTableSize = _getRealTableWidth();
 
-    tableDrawHeight = (elements.length) * rowHeight + realTableSize.theadHeight;
+    realRowHeight = realTableSize.estimatedRowHeight;
+
+    tableDrawHeight = (elements.length) * realRowHeight + realTableSize.theadHeight;
     tableDrawWidth = realTableSize.tableWidth;
 
     secondContainerWidth = containerWidth - scrollBarWidth;
@@ -330,8 +343,8 @@
     stacksInRender = stacksForRender;
     lastStack = 0;
     currentStack = 0;
-    totalStacks = parseInt((elements.length) / stack, 10)
-      + ((elements.length % stack) !== 0 ? 1 : 0);
+    totalStacks = parseInt((elements.length) / stackAmount, 10)
+      + ((elements.length % stackAmount) !== 0 ? 1 : 0);
     cameraArea = {
       x: 0, y: 0, width: secondContainerWidth, height: secondContainerHeight,
     };
@@ -341,21 +354,21 @@
 
     elements.forEach((v, i) => {
       const element = elements[i];
-      if (i < (stack * 3)) {
+      if (i < (stackAmount * 3)) {
         const newTr = componentTbody.insertRow(-1);
         newTr.style.height = `${rowHeight}px`;
-        newTr.classList.add(`its-${parseInt(i / stack, 10)}`);
+        newTr.classList.add(`its-${parseInt(i / stackAmount, 10)}`);
         newTr.classList.add('its-tr');
-        if (onRenderTr(newTr, element, parseInt(i / stack, 10))) {
+        if (onRenderTr(newTr, element, parseInt(i / stackAmount, 10))) {
           // do something
         } else {
           componentTbody.removeChild(componentTbody.lastChild);
         }
       }
-      if (hashStackItens[parseInt(i / stack, 10)] == null) {
-        hashStackItens[parseInt(i / stack, 10)] = [];
+      if (hashStackItens[parseInt(i / stackAmount, 10)] == null) {
+        hashStackItens[parseInt(i / stackAmount, 10)] = [];
       }
-      hashStackItens[parseInt(i / stack, 10)].push(element);
+      hashStackItens[parseInt(i / stackAmount, 10)].push(element);
     });
 
     componentTable.appendChild(componentTbody);
@@ -373,7 +386,7 @@
       onRenderTr: (tr) => tr,
       onRenderStack: (stackId) => stackId,
       rowHeight: 0,
-      stack: 0,
+      stackAmount: 0,
       ...options,
     });
 
@@ -382,7 +395,7 @@
     onRenderTr = newOptions.onRenderTr;
     onRenderStack = newOptions.onRenderStack;
     rowHeight = newOptions.rowHeight;
-    stack = newOptions.stack;
+    stackAmount = newOptions.stackAmount;
   }
 
   function _elementIsTable(element) {

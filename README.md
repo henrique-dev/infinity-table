@@ -10,10 +10,13 @@ This component has as objective the practicality and economy of resources when u
 `npm install infinity-table` and `import ITable from 'infinity-table';`
 
 ## Usage
-First we need to define a container for our component and a table with a header.
+Before, it is necessary to follow the following rules:
+- The th/td must have a minimum width so that their contents do not scale the line if the window is resized.
+- The tr must have a fixed and non-adjustable height, so be aware of its contents.
+Then we need to define a container for our component and a table with a header.
 ```html
-<div class='table-responsive' style='width: 100%; height: 90vh;'>
-  <table id='myTable' class='table table-striped'>
+<div style='width: 100%; height: 90vh;'>
+  <table id='myTable'>
     <thead>
       <tr>
         <th width='100px'></th>
