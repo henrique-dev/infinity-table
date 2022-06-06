@@ -104,7 +104,12 @@ let infinityCanvas = new ICanvas(container, {
       <div class="row gutters">
         <div class="col col-12">
           <h3>Usage</h3>
-          <p>First we must define a container for our component, with its respective size:</p>
+          <p>Before, it is necessary to follow the following rules:</p>
+          <ul>
+            <li>The th/td must have a minimum width so that their contents do not scale the line if the window is resized.</li>
+            <li>The tr must have a fixed and non-adjustable height, so be aware of its contents.</li>
+          </ul>
+          <p>Then we need to define a container for our component and a table with a header.</p>
           <pre><code>&lt;div style='width: 100%; height: 90vh;'&gt;
   &lt;table id='myTable'&gt;
     &lt;thead&gt;
@@ -115,7 +120,7 @@ let infinityCanvas = new ICanvas(container, {
     &lt;/thead&gt;
   &lt;/table&gt;
 &lt;/div&gt;</code></pre>
-<p>Then we take our container, and pass it to the component's constructor:</p>
+<p>Then we take our table, and pass it to the component's constructor:</p>
           <pre><code>const table = document.getElementById('myTable');
 
 function generateElements(amount) {
@@ -178,7 +183,7 @@ let infinityCanvas = new ICanvas(container, {
               </thead>
             </table>`;
           const table = document.getElementById('myTable');
-          console.log(elements.length)
+
           new ITable(table, {
             elements: elements,
             onRenderTr: onRenderTr,
