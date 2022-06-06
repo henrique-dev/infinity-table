@@ -1,6 +1,6 @@
 {
   "name": "infinity-table",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "This component has as objective the practicality and economy of resources when using a table with many items, reducing the amount of resources created, through the dynamic assembly of the lines.",
   "main": "dist/js/infinityTable.js",
   "scripts": {

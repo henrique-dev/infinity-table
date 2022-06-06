@@ -33,9 +33,9 @@ const table = document.getElementById('myTable');
 
 function onRenderTr(tr, element, stack) {
   const tdId = tr.insertCell(-1);
-  td.innerHTML = `${element.id}`;
+  tdId.innerHTML = `${element.id}`;
   const tdDescription = tr.insertCell(-1);
-  td.innerHTML = `${element.description}`;
+  tdDescription.innerHTML = `${element.description}`;
 }
 
 let infinityTable = new ITable(table, {
